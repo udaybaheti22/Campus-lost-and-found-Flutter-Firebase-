@@ -70,7 +70,7 @@ flutter pub get
 
 ### Firebase Setup
 
-This app expects Firebase to be configured for the target platforms. The repository already contains `lib/firebase_options.dart` and Android's `android/app/google-services.json`, but you should regenerate them if you connect the app to a different Firebase project.
+This app reads Firebase configuration from local environment values. The real `.env` file is ignored by Git, while `.env.example` is committed as a template.
 
 1. Log in to Firebase:
 
@@ -85,7 +85,21 @@ This app expects Firebase to be configured for the target platforms. The reposit
    flutterfire configure
    ```
 
-3. In the Firebase console, enable:
+3. Copy the environment template:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   On Windows PowerShell:
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+4. Fill `.env` with the Firebase values for your project.
+
+5. In the Firebase console, enable:
 
    - Email/Password Authentication
    - Cloud Firestore
@@ -95,23 +109,47 @@ The app converts a student's 9-digit registration ID into an internal Firebase A
 
 ## Running the App
 
-Run on a connected device or emulator:
+Run on a connected device or emulator with the local `.env` file:
 
-```bash
-flutter run
+```powershell
+.\tool\run_with_env.ps1
 ```
 
-Run on Chrome:
+Pass normal Flutter arguments after `-FlutterArgs`:
 
-```bash
-flutter run -d chrome
+```powershell
+.\tool\run_with_env.ps1 -FlutterArgs @("run", "-d", "chrome")
 ```
 
-Build a release APK:
+You can also pass values manually with `--dart-define` by providing every variable listed below:
 
 ```bash
-flutter build apk --release
+flutter run --dart-define=FIREBASE_ANDROID_API_KEY=your_key --dart-define=FIREBASE_ANDROID_PROJECT_ID=your_project_id
 ```
+
+Build a release APK with environment values:
+
+```powershell
+.\tool\run_with_env.ps1 -FlutterArgs @("build", "apk", "--release")
+```
+
+## Environment Variables
+
+The app expects these variables:
+
+- `FIREBASE_WEB_API_KEY`
+- `FIREBASE_WEB_AUTH_DOMAIN`
+- `FIREBASE_WEB_DATABASE_URL`
+- `FIREBASE_WEB_PROJECT_ID`
+- `FIREBASE_WEB_STORAGE_BUCKET`
+- `FIREBASE_WEB_MESSAGING_SENDER_ID`
+- `FIREBASE_WEB_APP_ID`
+- `FIREBASE_WEB_MEASUREMENT_ID`
+- `FIREBASE_ANDROID_API_KEY`
+- `FIREBASE_ANDROID_PROJECT_ID`
+- `FIREBASE_ANDROID_STORAGE_BUCKET`
+- `FIREBASE_ANDROID_MESSAGING_SENDER_ID`
+- `FIREBASE_ANDROID_APP_ID`
 
 ## Firestore Data Model
 
@@ -195,4 +233,3 @@ dart format lib test
 - Only item owners can see and manage incoming claims for their own reports.
 - Approving a claim marks that claim as approved, closes the item, and rejects other pending claims for the same item.
 - Firestore security rules should be configured before production use so users can only edit their own items, submit valid claims, and manage claims for items they own.
-

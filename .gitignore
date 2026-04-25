@@ -3,6 +3,12 @@
 *.log
 *.pyc
 *.swp
+.env
+.env.*
+!.env.example
+firebase_options.local.dart
+google-services.json
+GoogleService-Info.plist
 .DS_Store
 .atom/
 .build/
